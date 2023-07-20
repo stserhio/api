@@ -1,6 +1,7 @@
 const express = require("express");
 const routerAuth = require("./routes/routerAuth");
 const routerUser = require("./routes/routerUser");
+const routerPost = require("./routes/routerPost");
 // const multer = require('multer');
 // Документация API
 const swaggerJsdoc = require("swagger-jsdoc");
@@ -61,6 +62,8 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use('/v1/', routerAuth);
 app.use('/v1/', routerUser);
+app.use('/v1/', routerPost);
+
 
 app.use( '/v1/documentation', swaggerUi.serve, swaggerUi.setup(specification) );
 

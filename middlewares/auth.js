@@ -34,11 +34,13 @@ const verifyToken = async (req, res, next) => {
 
         req.tokenPayload = await jwt.verify(token, process.env.TOKEN_KEY);
 
-        const ban = await BlackList.findOne({ where: { id: req.tokenPayload.tokenId } });
 
-        if (ban) throw new Error();
+        // const ban = await BlackList.findOne({ where: { id: req.tokenPayload.tokenId } });
+        //
+        // if (ban) throw new Error();
 
     } catch (err) {
+        // console.log(err)
 
         return res.status(401).json({"message":"Доступ запрещен"});
     }

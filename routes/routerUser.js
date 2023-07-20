@@ -147,5 +147,6 @@ router.delete("/user/avatar", auth, userController.deleteAvatar);
 router.get("/user/profile", auth, userController.profile);
 
 
+
 module.exports = router
  

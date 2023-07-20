@@ -142,6 +142,10 @@ exports.deleteAvatar = async (req, res) => {
 
 exports.profile = async (req, res) => {
 
+    //TODO Дописать этот экспортс из гитхаба
+
+    const profile = User.findOne({where: {id: req.tokenPayload.userId}})
+
     // const avatar = await Media.findOne({
     //     where: {
     //         model: 'User',

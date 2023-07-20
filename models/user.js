@@ -2,6 +2,7 @@
 const { Model } = require('sequelize');
 const BlackList = require('./blacklist');
 const Profile = require('./profile');
+const Post = require('./post');
 /**
  * @swagger
  * components:
@@ -66,6 +67,9 @@ module.exports = (sequelize, DataTypes) => {
          * The `models/index` file will call this method automatically.
          */
         static associate(models) {
+            User.hasMany(models.BlackList, { foreignKey: 'userId'});
+            User.hasOne(models.Profile, { foreignKey: 'userId'});
+            User.hasMany(models.Post, { foreignKey: 'userId'});
             // define association here
         }
     }
@@ -111,6 +115,7 @@ module.exports = (sequelize, DataTypes) => {
         associate: (models) => {
             User.hasMany(models.BlackList, { foreignKey: 'userId'});
             User.hasOne(models.Profile, { foreignKey: 'userId'});
+            User.hasMany(models.Post, { foreignKey: 'userId'});
         }
     });
 
