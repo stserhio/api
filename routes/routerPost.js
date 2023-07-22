@@ -1,23 +1,20 @@
 const express = require('express');
-const userController = require('../controllers/userController');
 const validationRequest = require('../middlewares/validationRequest');
 const auth = require("../middlewares/auth");
 const { uploadImage } = require('../middlewares/uploadImage');
-const postController = require('../controllers/postController')
+const postController = require('../controllers/postController');
 
 const router = express.Router();
-
-
 
 /**
  * @swagger
  * tags:
- *   name: User
+ *   name: Post
  *   description: Работа с данными пользователя
- * /user/update:
+ * /post/create:
  *   post:
  *     summary: Обновление данных пользователя
- *     tags: [User]
+ *     tags: [Post]
  *     security:
  *       - apiKeyAuth: []
  *     requestBody:
@@ -55,8 +52,12 @@ const router = express.Router();
  *         description: Что-то пошло не так.. гы гы
  *
  */
+router.post("/post/create", auth, uploadImage.array("gallery", 10), validationRequest.post, postController.postCreate);
 
 
-router.post("/post/create", auth, uploadImage.array('gallery', 10), validationRequest.post, postController.postCreate)
+
+router.delete("/post/:postId", auth, postController.postDelete);
+// router.get("/posts", auth, validationRequest.post, postController.postCreate);
+
 
 module.exports = router
