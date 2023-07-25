@@ -12,6 +12,9 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
+      // gallery: {
+      //   type: Sequelize.STRING
+      // },
       userId: {
         type: Sequelize.INTEGER,
         references: {

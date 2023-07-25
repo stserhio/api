@@ -1,13 +1,4 @@
-const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const {v4: uuidv4} = require('uuid');
-
-const mailConfirmTemplate = require("../templates/mailConfirmTemplate");
-const sendMail = require("../services/mailer");
-const User = require("../models").User;
-const BlackList = require("../models").BlackList;
 const Media = require("../models").Media;
-const Profile = require("../models").Profile;
 const Post = require("../models").Post;
 const {S3} = require("@aws-sdk/client-s3");
 
@@ -67,7 +58,7 @@ exports.postDelete = async (req, res) => {
     })
 
 
-    if(media){
+    if (media) {
 
         const s3 = new S3({
             endpoint: process.env.AWS_HOST,
@@ -79,22 +70,84 @@ exports.postDelete = async (req, res) => {
             sslEnabled: false,
             forcePathStyle: true,
         });
-        media.forEach( async (modelMedia) => {
-            try{
+        media.forEach(async (modelMedia) => {
+            try {
 
-                await s3.deleteObject({ Bucket: process.env.AWS_BUCKET, Key: modelMedia.path });
+                await s3.deleteObject({Bucket: process.env.AWS_BUCKET, Key: modelMedia.path});
 
                 await modelMedia.destroy();
 
-            }catch (error) {
+            } catch (error) {
 
-                res.status(400).json({ "message": error.message });
+                res.status(400).json({"message": error.message});
 
             }
         })
     }
 
     post.destroy()
-    return res.status(200).json({message: "Success"})
+    return res.status(200).json({message: "Успех"})
 }
 
+exports.getAll = async (req, res) => {
+
+    //todo сделать так чтоб к каждому посту добавлялись изображения из галереи
+
+    try {
+
+        const posts = await Post.findAll({
+            where: {userId: req.params.userId},
+            })
+
+        if (!posts) {
+            return res.status(400).json({"message":"Таких постов не существует или неправильный id"});
+        }
+
+        const gallery = await Media.findOne({
+            where: {
+                model: 'Post',
+                fieldname: 'gallery',
+            }
+        });
+        console.log(gallery.path)
+        res.status(200).json({
+            posts,
+            gallery: gallery.path
+        })
+
+    } catch (err) {
+        console.log(err.message)
+        res.status(500).json({
+            message: "Ошибка получения статьи"
+        })
+    }
+
+}
+
+exports.getOne = async (req, res) => {
+    try{
+        const post = await Post.findOne({where: {id: req.params.id}})
+
+        if (!post) {
+            return res.status(404).json({message: "Такого поста не существует или неправильный id"})
+        }
+        const gallery = await Media.findOne({
+            where: {
+                model: 'Post',
+                fieldname: 'gallery',
+            }
+        });
+        console.log(gallery.path)
+        res.status(200).json({
+            post,
+            gallery: gallery.path
+        })
+
+    } catch (err) {
+        console.log(err.message)
+        res.status(500).json({
+            message: "Ошибка получения статьи"
+        })
+
+    }
+}

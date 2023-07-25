@@ -57,7 +57,12 @@ router.post("/post/create", auth, uploadImage.array("gallery", 10), validationRe
 
 
 router.delete("/post/:postId", auth, postController.postDelete);
-// router.get("/posts", auth, validationRequest.post, postController.postCreate);
+
+
+router.get("/posts/:userId", auth, postController.getAll);
+
+
+router.get("/post/:id", auth, postController.getOne);
 
 
 module.exports = router
