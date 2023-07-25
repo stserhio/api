@@ -96,7 +96,7 @@ exports.confirm = async (req, res, next) => {
     try {
         req.body = await jwt.verify(req.query.tkey, process.env.TOKEN_KEY);
     } catch (err) {
-        return res.status(401).json({"message": "Не верный токен"});
+        return res.status(401).json({ "message": "Не верный токен" });
     }
 
     return next();
@@ -473,4 +473,40 @@ exports.post = async (req, res, next) => {
     if (errors.isEmpty()) return next();
 
     return res.status(400).json({ errors: errors.array() });
+}
+
+exports.paginateQueryParams = async (req, res, next) => {
+
+    let offset = 0;
+    let limit = 20;
+
+    if (
+        typeof req.query.offset !== 'undefined' &&
+        Number.isInteger(+req.query.offset)
+    ) {
+        offset = +req.query.offset;
+    }
+
+    if (
+        typeof req.query.limit !== 'undefined' &&
+        Number.isInteger(+req.query.limit) &&
+        +req.query.limit < 20
+    ) {
+        limit = +req.query.limit;
+    }
+
+    req.paginate = { offset, limit };
+
+    return next();
+}
+
+exports.paramPostId = async (req, res, next) => {
+
+    if ( typeof req.params.postId !== "undefined" || !Number.isInteger(+req.params.postId) ) {
+        return res.status(404).json({ "message": "Параметр PostID задан не верно" });
+    }
+
+    req.postId = +req.params.postId
+
+    return next();
 }

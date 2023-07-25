@@ -1,12 +1,5 @@
-
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const { v4: uuidv4 } = require('uuid');
-
-const mailConfirmTemplate = require("../templates/mailConfirmTemplate");
-const sendMail = require("../services/mailer");
 const User = require("../models").User;
-const BlackList = require("../models").BlackList;
 const Media = require("../models").Media;
 const Profile = require("../models").Profile;
 const { S3 } = require("@aws-sdk/client-s3");
@@ -142,23 +135,34 @@ exports.deleteAvatar = async (req, res) => {
 
 exports.profile = async (req, res) => {
 
-    //TODO Дописать этот экспортс из гитхаба
+    const user = await User.findOne({
+        where: { id: req.tokenPayload.userId },
+        attributes: ['id', 'firstName', 'lastName', 'email'],
+        include: 'Profile'
+    });
 
-    const profile = User.findOne({where: {id: req.tokenPayload.userId}})
+    if (!user) return res.status(404).json({"message":"Такого пользователя не существует"});
 
-    // const avatar = await Media.findOne({
-    //     where: {
-    //         model: 'User',
-    //         modelId: user.id,
-    //         fieldname: 'avatar'
-    //     }
-    // })
-    // const pathToAvatar = avatar.getDataValue('path') ? `https://instagram.lern.dev/storage/${avatar.dataValues.path}` : '';
+    const avatar = await Media.findOne({
+        where: {
+            model: 'User',
+            modelId: user.id,
+            fieldname: 'avatar'
+        }
+    });
+
+    let pathToAvatar = '';
+    if (avatar) pathToAvatar = `https://instagram.lern.dev/storage/${avatar.path}`;
 
     return res.status(200).json({
-        firstName: req.user.firstName,
-        lastName: req.user.lastName,
-        email: req.user.email,
-        avatar: req.user.avatar
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        avatar: pathToAvatar,
+        phone: user.Profile.phone,
+        description: user.Profile.description,
+        latitude: user.Profile.latitude,
+        longitude: user.Profile.longitude,
+        commercial: user.Profile.commercial
     });
 };

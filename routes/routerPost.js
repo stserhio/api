@@ -54,10 +54,11 @@ const router = express.Router();
  */
 router.post("/post/create", auth, uploadImage.array("gallery", 10), validationRequest.post, postController.postCreate);
 
+router.delete("/post/:postId", auth, validationRequest.paramPostId, postController.postDelete);
 
+router.get("/post/all", auth, validationRequest.paginateQueryParams, postController.postGetAll);
 
-router.delete("/post/:postId", auth, postController.postDelete);
-// router.get("/posts", auth, validationRequest.post, postController.postCreate);
+router.get("/post/:postId", auth, validationRequest.paramPostId, postController.postGetById);
 
 
 module.exports = router

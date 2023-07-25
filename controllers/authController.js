@@ -6,9 +6,8 @@ const { v4: uuidv4 } = require('uuid');
 const mailConfirmTemplate = require("../templates/mailConfirmTemplate");
 const sendMail = require("../services/mailer");
 const mailForgotTemplate = require("../templates/mailForgotTemplate");
+
 const User = require("../models").User;
-const BlackList = require("../models").BlackList;
-const Media = require("../models").Media;
 const {BanToken} = require("../utils/helper")
 
 // Получение данных для регистрации, отправка письма для подтверждения
